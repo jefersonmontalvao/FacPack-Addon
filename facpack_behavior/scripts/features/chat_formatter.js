@@ -35,7 +35,7 @@ class ChatFormatter {
     }
 
     formatTemplate(template) {
-        let faction = (FactionHandler.playerHasFaction(this.sender) ? FactionHandler.getPlayerFaction(this.sender) : '');
+        let faction = (FactionHandler.playerHasFaction(this.sender) ? FactionHandler.getPlayerFaction(this.sender).id : '');
         let tag = this.tags[getPlayerHierarchy(this.sender)];
         let sender = this.sender.name;
         let message = this.message;
