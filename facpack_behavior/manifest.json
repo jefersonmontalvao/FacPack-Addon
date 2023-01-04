@@ -1,0 +1,68 @@
+{
+    "format_version": 2,
+    "metadata": {
+        "authors": [
+          "LuCiferKun6582"
+        ]
+      },
+    "header": {
+        "name": "FacPack",
+        "description": "Make your world as a Faction Server!",
+        "uuid": "c32d7d0b-0fe9-4283-86b9-c9dff6cb3f7a",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "min_engine_version": [
+            1,
+            19,
+            0
+        ]
+    },
+    "modules": [
+        {
+            "description": "Make your world as a Faction Server!",
+            "type": "data",
+            "uuid": "a47d4bee-0a77-4ea3-b5e0-f7bf9394026a",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        },
+        {
+            "type": "script",
+            "language": "javascript",
+            "uuid": "a46ca90d-0688-4b87-8bdb-1e63c74770b4",
+            "entry": "scripts/init.js",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        }
+    ],
+    "dependencies": [
+        {
+            "uuid": "46a79f43-671e-4c74-8285-90e6cc428720",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        },
+        {
+            "module_name": "@minecraft/server",
+            "version": "1.1.0-beta"
+        },
+        {
+            "module_name": "@minecraft/server-gametest",
+            "version": "1.0.0-beta"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
+            "version": "1.0.0-beta"
+        }
+    ]
+}
