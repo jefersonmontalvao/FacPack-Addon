@@ -19,7 +19,7 @@ class CommandHandler {
     run() {
         eventBeforeChat(chat_object => {
             if(chat_object.message.startsWith(this.prefix)) {
-                this.sender = chat_object.sender; // dommand sender.
+                this.sender = chat_object.sender; // command sender.
                 this.full_command = chat_object.message; // full command.
                 this.command = chat_object.message.slice(this.prefix.length).split(" ")[0]; // typed command.
                 if (this.command === this.command_id) {
