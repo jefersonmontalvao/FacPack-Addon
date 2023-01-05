@@ -4,10 +4,12 @@ import { FactionHandlerException } from "../system/exceptions";
 
 class FactionHandler {
     static playerHasFaction(player) {
-        const participants = world.scoreboard.getParticipants();
-        for (let participant of participants) {
-            if (participant.getEntity() === player) {
-                return true;
+        const factions_list = this.getFactionsList();
+        for (let faction of factions_list) {
+            for (let participant of faction.getParticipants()) {
+                if (participant.getEntity() === player) {
+                    return true;
+                }
             }
         }
         return false;
