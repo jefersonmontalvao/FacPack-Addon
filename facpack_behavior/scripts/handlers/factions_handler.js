@@ -1,4 +1,6 @@
 import { world } from "@minecraft/server";
+import { runMCCommandByEntity } from "../modules/player_utils";
+import { trimAllWS } from "../modules/system.utils";
 
 import { FactionHandlerException } from "../system/exceptions";
 
@@ -32,17 +34,26 @@ class FactionHandler {
     }
 
     static createFaction(faction_name, creator) {
-        if (/^[a-zA-Z]([a-zA-Z0-9]|\s){2,15}$/.test(faction_name)) {
-            let name_as_list = faction_name.strip().trim().split(' ');
-            name_as_list = name_as_list.filter(word => {
-                if (word !== '') {
-                    return word;
-                }
-            });
-            const formated_name = name_as_list.toString().replaceAll(',', ' ');
+        /**Trim all white spaces of faction name. */
+        faction_name = trimAllWS(faction_name);
 
-            if (!this.doFactionExists(formated_name)) {
-                world.scoreboard.addObjective(faction_name, `leader:${creator.name}`)
+        /**Faction name rules
+         * Min Length: 3
+         * Max Length: 16
+         * Allowed Characters: [A-Za-z], [0-9] and [\s]
+         */
+        if (/^[a-zA-Z]([a-zA-Z0-9]|\s){2,15}$/.test(faction_name)) {
+            /**
+             * If faction name do not exists, faction will be created.
+             *  Faction Schema
+             * scoreboard.id will contain the faction name.
+             * scoreboard.displayName will contain a formated string 'leader:%leader-name%'
+             */
+            if (!this.doFactionExists(faction_name)) {
+                // Creating
+                world.scoreboard.addObjective(faction_name, `leader:${creator.name}`);
+                // Set leader
+                runMCCommandByEntity(`scoreboard players set @s ${faction_name} -1`, creator);
             } else {
                 throw FactionHandlerException.CantCreateExistingFaction;
             }
