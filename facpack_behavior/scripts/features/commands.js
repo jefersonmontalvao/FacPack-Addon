@@ -1,8 +1,7 @@
 // Internal imports
-import { Spawn } from "../conf/enumarations.conf"
+import { Spawn } from "../conf/enumerations.conf"
 import { CommandHandler } from "../handlers/command_handler";
 import { runMCCommandAtOverworld } from "../modules/mc_world.utils";
-import { runMCCommandByEntity } from "../modules/player_utils";
 import { parseArrayToString, sendAdviceToEntity, trimAllWS } from "../modules/system.utils"
 import { FactionHandler } from "../handlers/factions_handler";
 import { text } from "../conf/lang.conf";
@@ -10,6 +9,7 @@ import { FactionHandlerException } from "../system/exceptions";
 
 /**
  * Teleports the command sender to spawn.
+ * The spawn can bed changed by Spawn from conf/enumerations.conf
  */
 class SpawnTeleport extends CommandHandler {
     constructor(prefix = '!') {
@@ -17,6 +17,7 @@ class SpawnTeleport extends CommandHandler {
     }
 
     commandCallback() {
+        // This command is running at overworld.
         runMCCommandAtOverworld(`tp ${this.sender.name} ${Spawn.x} ${Spawn.y} ${Spawn.z}`);
     }
 }
@@ -31,7 +32,7 @@ class FactionManager extends CommandHandler {
 
     commandCallback() {
         const subcommand = this.getSubCommand();
-        const params = this.getCommandParams();
+        const params = this.getCommandParams(true);
 
         switch (subcommand) {
             case 'create':
@@ -86,25 +87,42 @@ class FactionManager extends CommandHandler {
                 }
                 break
             case 'invite':
+                // TODO
                 break
             case 'accept':
+                // TODO
                 break
             case 'deny':
+                // TODO
                 break
             case 'leave':
+                // TODO
                 break
         }
     }
 
+    /**
+     * Returns the sub-command.
+     * example: !faction create -> create
+     */
     getSubCommand() {
         return this.full_command.split(' ')[1];
     }
 
-    getCommandParams() {
-        return this.full_command.split(' ').slice(2);
+    /**
+     * Returns a list of params that was typed after
+     * main command or sub-command if param has_sub_cmd
+     * is true, the default is false.
+     */
+    getCommandParams(has_sub_cmd = false) {
+        if (has_sub_cmd) {
+            return this.full_command.split(' ').slice(2);
+        } else {
+            return this.full_command.split(' ').slice(1);
+        }
     }
 }
 
-const command_list = [SpawnTeleport, FactionManager]
+const COMMAND_LIST = [SpawnTeleport, FactionManager]
 
-export { command_list }
+export { COMMAND_LIST }
