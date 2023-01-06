@@ -1,4 +1,5 @@
 import { OtherExceptions } from "../system/exceptions";
+import { runMCCommandByEntity } from "./player_utils";
 
 function sendAdviceToEntity(target, message, advice_type) {
     message = message
@@ -42,4 +43,17 @@ function trimAllWS(text) {
     return formated_text.trim();
 }
 
-export { sendAdviceToEntity, trimAllWS };
+/**
+ * This function make a text from a array of strings.
+ * It will make join white spaces between elements of array.
+ * Return a string formated.
+ */
+function parseArrayToString(array) {
+    let arrayAsString = array[0];
+    array.slice(1).forEach(element => {
+        arrayAsString += ' ' + element.toString();
+    });
+    return arrayAsString;
+}
+
+export { sendAdviceToEntity, trimAllWS, parseArrayToString };
