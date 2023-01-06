@@ -1,7 +1,13 @@
+/** 
+ * Exceptions for uncaught errors.
+ */
 class OtherExceptions {
     static InvalidArgument = "the value of the argument is invalid";
 }
 
+/**
+ * Exceptions for factions handler.
+ */
 class FactionHandlerException {
     static PlayerHasNotFaction = "the player does not have a faction";
 
@@ -10,6 +16,10 @@ class FactionHandlerException {
     static CantCreateExistingFaction = "you're trying to create an existing faction";
 
     static InvalidFactionId = "invalid faction id";
+
+    static FactionDeleteError = "error to delete faction";
+
+    static FactionDoesNotExists = "the faction does not exists"
 }
 
 export { OtherExceptions, FactionHandlerException };
