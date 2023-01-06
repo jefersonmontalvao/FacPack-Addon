@@ -1,12 +1,17 @@
 import { world } from "@minecraft/server";
 import { runMCCommandByEntity } from "../modules/player_utils";
 import { trimAllWS } from "../modules/system.utils";
-
 import { FactionHandlerException } from "../system/exceptions";
 
+/** That's the class that controls everything about factions. */
 class FactionHandler {
+    /**
+     * Test if player has a faction.
+     */
     static playerHasFaction(player) {
         const factions_list = this.getFactionsList();
+
+        // Check if player is participating of some faction from factions list.
         for (let faction of factions_list) {
             for (let participant of faction.getParticipants()) {
                 if (participant.getEntity() === player) {
@@ -16,24 +21,23 @@ class FactionHandler {
         }
         return false;
     }
-    
+
+    /** Return the player faction object.*/
     static getPlayerFaction(player) {
-        try {
-            const factions = this.getFactionsList();
-            for (let faction of factions) {
-                for (let score of faction.getScores()) {
-                    if (score.participant.getEntity() === player) {
-                        return faction;
-                    }
+        const factions_list = this.getFactionsList();
+
+        for (let faction of factions_list) {
+            let faction_scores = faction.getScores();
+            for (let faction_score of faction_scores) {
+                if (faction_score.participant.getEntity() === player) {
+                    return faction;
                 }
             }
-            throw FactionHandlerException.PlayerHasNotFaction;
-        } catch(exc) {
-            return undefined;
         }
+        throw FactionHandlerException.PlayerHasNotFaction;
     }
 
-    /**Create a faction and set the creator as leader. */
+    /** Create a faction and set the creator as leader. */
     static createFaction(faction_name, creator) {
         /**Trim all white spaces of faction name. */
         faction_name = trimAllWS(faction_name);
@@ -63,24 +67,32 @@ class FactionHandler {
         }
     }
 
+    /** Delete faction */
     static deleteFaction(faction) {
-        world.scoreboard.removeObjective(faction)
+        try {
+            world.scoreboard.removeObjective(faction)
+        } catch {
+            throw FactionHandlerException.FactionDeleteError;
+        }
     }
 
+    /** Test if faction exists */
     static doFactionExists(faction_name) {
-        const factions = this.getFactionsList();
-        let fac_identifiers = [];
-        for (let faction of factions) {
-            fac_identifiers.push(faction.id);
+        // Init few variables
+        const factions_list = this.getFactionsList();
+        const faction_ids = [];
+
+        for (let faction of factions_list) {
+            faction_ids.push(faction.id);
         }
-        return fac_identifiers.includes(faction_name);
+        return faction_ids.includes(faction_name);
     }
 
     /**
      * Returns true if player is the faction leader.
      */
     static isPlayerLeader(player, faction) {
-        /**Init few importante variables. */
+        /** Init few importante variables. */
         const scores_data = faction.getScores();
         let player_score = undefined;
 
@@ -101,26 +113,37 @@ class FactionHandler {
         }
     }
 
+    /**
+     * Returns the faction with the respective name.
+     */
     static getFactionByName(faction_name) {
-        const factions = this.getFactionsList();
+        const factions_list = this.getFactionsList();
         let query;
-        for (let faction of factions) {
+
+
+        for (let faction of factions_list) {
             if (faction.id === faction_name) {
                 query = faction;
                 break;
             }
         }
-        return query;
+        if (query !== undefined) {
+            return query;
+        } else {
+            throw FactionHandlerException.FactionDoesNotExists;
+        }
     }
 
     static getFactionsList() {
-        const objectives = world.scoreboard.getObjectives(); // Return a list of objetives
-        const factions = objectives.filter(objective => {
-            const fac_display_pattern = new RegExp('leader:.+');
-            return fac_display_pattern.test(objective.displayName);
+        const objectives_list = world.scoreboard.getObjectives();
+
+        // Filter all objective that keep the display name pattern.
+        const factions_list = objectives_list.filter(objective => {
+            const pattern = new RegExp('leader:.+');
+            return pattern.test(objective.displayName);
         });
-        return factions;
+        return factions_list;
     }
 }
 
-export { FactionHandler }
+export { FactionHandler };
