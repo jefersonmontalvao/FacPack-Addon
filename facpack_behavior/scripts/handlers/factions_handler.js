@@ -33,6 +33,7 @@ class FactionHandler {
         }
     }
 
+    /**Create a faction and set the creator as leader. */
     static createFaction(faction_name, creator) {
         /**Trim all white spaces of faction name. */
         faction_name = trimAllWS(faction_name);
@@ -53,7 +54,7 @@ class FactionHandler {
                 // Creating
                 world.scoreboard.addObjective(faction_name, `leader:${creator.name}`);
                 // Set leader
-                runMCCommandByEntity(`scoreboard players set @s ${faction_name} -1`, creator);
+                runMCCommandByEntity(`scoreboard players set @s "${faction_name}" -1`, creator);
             } else {
                 throw FactionHandlerException.CantCreateExistingFaction;
             }
@@ -75,11 +76,15 @@ class FactionHandler {
         return fac_identifiers.includes(faction_name);
     }
 
+    /**
+     * Returns true if player is the faction leader.
+     */
     static isPlayerLeader(player, faction) {
-        const scores = faction.getScores();
-        const player_score = undefined;
+        /**Init few importante variables. */
+        const scores_data = faction.getScores();
+        let player_score = undefined;
 
-        for (let score of scores) {
+        for (let score of scores_data) {
             if (score.participant.getEntity() === player) {
                 player_score = score.score;
                 break;
