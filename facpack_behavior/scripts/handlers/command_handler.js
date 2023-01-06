@@ -1,29 +1,48 @@
 import { eventBeforeChat } from '../modules/mc_system.utils';
 
+/**
+ * Thats the class that controls everything about 
+ * addon commands. Needs to be inherited by a specific command
+ * class.
+ */
 class CommandHandler {
     constructor(prefix = '!', id) {
-        this.prefix = prefix; // command prefix.
-        this.command_id = id; // command identifier
-        this.command; // command that was typed by sender
-        this.sender; // sender objects. entity type.
-        this.full_command; // full command with no formatation
+        // Init few variables.
+        this.prefix = prefix;
+        this.command_id = id;
 
-        // run function block when class is a instance
-        this.run();
+        this.command; // command that was typed by sender.
+        this.sender;
+        this.full_command;
+
+        this.execute();
     }
 
+    /**
+     * This function is used to be subscribed to execute this block
+     * by execute function.
+     */
     commandCallback() {
         throw 'undefined callback';
     }
 
-    run() {
-        eventBeforeChat(chat_object => {
-            if(chat_object.message.startsWith(this.prefix)) {
-                this.sender = chat_object.sender; // command sender.
-                this.full_command = chat_object.message; // full command.
-                this.command = chat_object.message.slice(this.prefix.length).split(" ")[0]; // typed command.
+    /**
+     * This function run callback function if command id is typed by user.
+     */
+    execute() {
+        eventBeforeChat(chat => {
+            // Check if prefix was typed.
+            if (chat.message.startsWith(this.prefix)) {
+                // Define the initial values of some variables.
+                this.command = chat.message
+                    .slice(this.prefix.length)
+                    .split(" ")[0];
+
+                this.sender = chat.sender;
+                this.full_command = chat.message;
+                
                 if (this.command === this.command_id) {
-                    chat_object.cancel = true; // do not broadcast
+                    chat.cancel = true; // do not broadcast
                     this.commandCallback();
                 }
             }
