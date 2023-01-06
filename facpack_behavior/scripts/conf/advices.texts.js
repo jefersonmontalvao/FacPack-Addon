@@ -1,3 +1,9 @@
+/**
+ * In this file we can create any translation we want and insert into variable named as the lang id.
+ * To change the translation of addon we just need to import the translation to ./lang.conf.js/ and insert
+ * the exported translation to variable text there...
+ */
+
 export const pt_br = {
     fac: {
         create_success: 'Criado com sucesso!',
