@@ -1,6 +1,15 @@
 import { OtherExceptions } from "../system/exceptions";
 import { runMCCommandByEntity } from "./player_utils";
 
+/**
+ * An easy way to use tellraw to send a message to some player.
+ * This function avoid errors by special characters in the text.
+ * Advice Types:
+ * info -> §6
+ * error -> §c
+ * success -> §a
+ * none -> default chat color.
+ */
 function sendAdviceToEntity(target, message, advice_type) {
     message = message
         .replaceAll('\\', '\\\\')
@@ -18,7 +27,7 @@ function sendAdviceToEntity(target, message, advice_type) {
             text_color = '§a';
             return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
         case 'none': 
-            text_color = '§f';
+            text_color = '';
             return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
         default:
             throw OtherExceptions.InvalidArgument;
