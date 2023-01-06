@@ -1,3 +1,8 @@
+/**
+ * This function retuns if player has some tag as
+ * __admin__ or __owner__, and return the hierachy
+ * using a string.
+ */
 function getPlayerHierarchy(player) {
     if (playerHasTag(player, '__builder__')) {
         return 'builder';
@@ -5,15 +10,24 @@ function getPlayerHierarchy(player) {
         return 'admin';
     } else if (playerHasTag(player, '__owner__')) {
         return 'owner';
-    } else {
+    } else if (playerHasTag(player, '__member__')) {
         return 'member';
+    } else {
+        return 'guest';
     }
 }
 
+/**
+ * Test if player has some specific tag.
+ */
 function playerHasTag(player, tag) {
     return player.hasTag(tag)
 }
 
+/**
+ * Run a command by an entity object.
+ * Returns the number of sucessfull executions.
+ */
 function runMCCommandByEntity(cmd, entity) {
     return entity.runCommandAsync(cmd);
 }
