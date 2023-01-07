@@ -5,6 +5,9 @@
  */
 
 export const pt_br = {
+    system: {
+        worldMasterInfo: 'Você foi definido como mestre do mundo.'
+    },
     fac: {
         create_success: 'Criado com sucesso!',
         create_fail: {

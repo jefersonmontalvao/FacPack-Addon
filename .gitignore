@@ -1,3 +1,12 @@
 
 .mcattributes
 .mcdefinitions
+facpack_behavior/node_modules/.package-lock.json
+facpack_behavior/node_modules/@minecraft/server/.eslintrc.json
+facpack_behavior/node_modules/@minecraft/server/index.d.ts
+facpack_behavior/node_modules/@minecraft/server/package.json
+facpack_behavior/node_modules/@minecraft/server/README.md
+facpack_behavior/node_modules/@minecraft/server/tests.ts
+facpack_behavior/node_modules/@minecraft/server/tsconfig.json
+facpack_behavior/package-lock.json
+facpack_behavior/package.json
