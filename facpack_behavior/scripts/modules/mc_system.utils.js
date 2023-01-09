@@ -1,4 +1,4 @@
-import { world } from '@minecraft/server';
+import { world, system } from '@minecraft/server';
 
 /**
  * This function adds an Event Before Chat.
@@ -9,4 +9,18 @@ function eventBeforeChat(callback) {
     world.events.beforeChat.subscribe(callback);
 }
 
-export { eventBeforeChat };
+/**
+ * This function runs a void function
+ * when timeout(seconds).
+ * It runs only one time.
+ */
+function setMcTimeout(void_, timeout) {
+    timeout = timeout * 20;
+
+    const timer = system.runSchedule(function () {
+        void_();
+        system.clearRunSchedule(timer);
+    }, timeout);
+}
+
+export { eventBeforeChat, setMcTimeout };
