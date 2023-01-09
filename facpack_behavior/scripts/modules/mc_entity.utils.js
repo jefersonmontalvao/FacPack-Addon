@@ -17,4 +17,18 @@ function getEntitiesByTagName(tag) {
     return query;
 }
 
-export { getEntitiesByTagName };
+/**
+ * Test if entity has a specified tag.
+ */
+function entityHasTag(entity) {
+    return entity.hasTag();
+}
+
+/**
+ * Kill an entity.
+ */
+function killEntity(entity) {
+    entity.kill();
+}
+
+export { getEntitiesByTagName, entityHasTag, killEntity };

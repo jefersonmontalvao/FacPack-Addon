@@ -19,7 +19,11 @@ class FactionHandlerException {
 
     static FactionDeleteError = "error to delete faction";
 
-    static FactionDoesNotExists = "the faction does not exists"
+    static FactionDoesNotExists = "the faction does not exists";
 }
 
-export { OtherExceptions, FactionHandlerException };
+class DatabaseHandlerException {
+    static OfflineDatabase = "no database online";
+}
+
+export { OtherExceptions, FactionHandlerException, DatabaseHandlerException };
