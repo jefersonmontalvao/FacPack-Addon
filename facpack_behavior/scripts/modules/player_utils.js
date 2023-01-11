@@ -1,4 +1,5 @@
 import { world } from '@minecraft/server';
+import { OtherExceptions } from '../system/exceptions';
 
 /**
  * This function retuns if player has some tag as
@@ -49,4 +50,16 @@ function tryToAutocompletePlayerName(name) {
     }
 }
 
-export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity }
+/**
+ * Returns player object if online.
+ */
+function getPlayerByName(name) {
+    const onlinePlayers = world.getAllPlayers();
+    if (onlinePlayers.includes(name)) {
+        return onlinePlayers[onlinePlayers.indexOf(name)];
+    } else {
+        throw OtherExceptions.OfflinePlayer;
+    }
+}
+
+export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity, getPlayerByName }
