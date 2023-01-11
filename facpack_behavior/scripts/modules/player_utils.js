@@ -62,4 +62,4 @@ function getPlayerByName(name) {
     }
 }
 
-export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity, getPlayerByName }
+export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity, getPlayerByName, tryToAutocompletePlayerName }
