@@ -1,3 +1,5 @@
+import { world } from '@minecraft/server';
+
 /**
  * This function retuns if player has some tag as
  * __admin__ or __owner__, and return the hierachy
@@ -30,6 +32,21 @@ function playerHasTag(player, tag) {
  */
 function runMCCommandByEntity(cmd, entity) {
     return entity.runCommandAsync(cmd);
+}
+
+function tryToAutocompletePlayerName(name) {
+    const namePattern = new RegExp(name, 'i');
+    const match = world.getAllPlayers().filter(player => {
+        if (namePattern.test(player.name)) {
+            return player.name;
+        }
+    });
+    
+    if (match.length === 1) {
+        return match[0];
+    } else {
+        return name;
+    }
 }
 
 export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity }
