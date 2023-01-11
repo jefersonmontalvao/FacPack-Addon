@@ -3,6 +3,7 @@
  */
 class OtherExceptions {
     static InvalidArgument = "the value of the argument is invalid";
+    static OfflinePlayer = "the player is not online";
 }
 
 /**
