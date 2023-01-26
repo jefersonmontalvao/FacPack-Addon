@@ -10,28 +10,12 @@ import { runMCCommandByEntity } from "./player_utils";
  * success -> §a
  * none -> default chat color.
  */
-function sendAdviceToEntity(target, message, advice_type) {
+function sendAdviceToEntity(target, message) {
     message = message
         .replaceAll('\\', '\\\\')
         .replaceAll('"', '\\"');
-    let text_color;
-
-    switch (advice_type) {
-        case 'info':
-            text_color = '§6';
-            return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
-        case 'error':
-            text_color = '§c';
-            return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
-        case 'success':
-            text_color = '§a';
-            return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
-        case 'none': 
-            text_color = '';
-            return runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${text_color}${message}"}]}`, target);
-        default:
-            throw OtherExceptions.InvalidArgument;
-    }
+        
+    runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "${message}"}]}`, target);
 }
 
 /**
@@ -65,4 +49,30 @@ function parseArrayToString(array) {
     return arrayAsString;
 }
 
-export { sendAdviceToEntity, trimAllWS, parseArrayToString };
+/**
+ * Play a sound to player.
+ */
+function playSoundToPlayer(target, soundType = undefined, soundPath = undefined) {
+    switch (soundType) {
+        case 'info':
+            runMCCommandByEntity('playsound mob.witch.death @s ~ ~ ~ 1', target);
+            break;
+        case 'error':
+            runMCCommandByEntity('playsound note.bass @s ~ ~ ~ 1', target);
+            break;
+        case 'success':
+            runMCCommandByEntity('playsound note.pling @s ~ ~ ~ 1', target);
+            break;
+        case undefined:
+            if (soundPath !== undefined) {
+                runMCCommandByEntity(`playsound ${soundPath} @s ~ ~ ~ 1`, target);
+            } else {
+                throw Error(OtherExceptions.InvalidArgument);
+            }
+            break;
+        default:
+            throw Error(OtherExceptions.InvalidArgument);
+    }
+}
+
+export { sendAdviceToEntity, trimAllWS, parseArrayToString, playSoundToPlayer };

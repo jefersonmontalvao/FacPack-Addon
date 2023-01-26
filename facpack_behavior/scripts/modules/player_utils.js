@@ -44,7 +44,7 @@ function tryToAutocompletePlayerName(name) {
     });
     
     if (match.length === 1) {
-        return match[0];
+        return match[0].name;
     } else {
         return name;
     }
@@ -55,11 +55,13 @@ function tryToAutocompletePlayerName(name) {
  */
 function getPlayerByName(name) {
     const onlinePlayers = world.getAllPlayers();
-    if (onlinePlayers.includes(name)) {
-        return onlinePlayers[onlinePlayers.indexOf(name)];
-    } else {
-        throw OtherExceptions.OfflinePlayer;
+    for (let player of onlinePlayers) {
+        if (player.name === name) {
+            return player;
+        }
     }
+    throw Error(OtherExceptions.OfflinePlayer);
+
 }
 
 export { getPlayerHierarchy, playerHasTag, runMCCommandByEntity, getPlayerByName, tryToAutocompletePlayerName }

@@ -21,6 +21,8 @@ class FactionHandlerException {
     static FactionDeleteError = "error to delete faction";
 
     static FactionDoesNotExists = "the faction does not exists";
+
+    static PlayerHasFaction = "the player already has a faction."
 }
 
 class DatabaseHandlerException {

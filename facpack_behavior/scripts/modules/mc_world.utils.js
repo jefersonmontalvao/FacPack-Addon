@@ -22,4 +22,8 @@ function runMCCommandAtEnd(cmd) {
     return world.getDimension(MinecraftDimensionTypes.theEnd).runCommandAsync(cmd);
 }
 
-export { runMCCommandAtOverworld, runMCCommandAtNether, runMCCommandAtEnd };
+function getOverworld() {
+    return world.getDimension(MinecraftDimensionTypes.overworld);
+}
+
+export { runMCCommandAtOverworld, runMCCommandAtNether, runMCCommandAtEnd, getOverworld };

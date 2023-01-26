@@ -34,7 +34,7 @@ class FactionHandler {
                 }
             }
         }
-        throw FactionHandlerException.PlayerHasNotFaction;
+        throw Error(FactionHandlerException.PlayerHasNotFaction);
     }
 
     /** Create a faction and set the creator as leader. */
@@ -103,7 +103,7 @@ class FactionHandler {
             }
         }
         if (player_score === undefined) {
-            throw FactionHandlerException.NotMemberError
+            throw Error(FactionHandlerException.NotMemberError)
         } else {
             if (player_score === -1) {
                 return true;
@@ -143,6 +143,32 @@ class FactionHandler {
             return pattern.test(objective.displayName);
         });
         return factions_list;
+    }
+
+    static addMember(player, faction) {
+        if (!this.playerHasFaction(player)) {
+            runMCCommandByEntity(`scoreboard players set @s "${faction.id}" 1`, player);
+        } else {
+            throw Error(FactionHandlerException.PlayerHasFaction);
+        }
+    }
+
+    static removeMember(player, faction) {
+        if (this.playerHasFaction(player)) {
+            runMCCommandByEntity(`scoreboard players reset @s "${faction.id}"`, player);
+        } else {
+            throw Error(FactionHandlerException.PlayerHasNotFaction);
+        }
+    }
+
+    static isMemberOf(player, faction) {
+        if (this.playerHasFaction(player)) {
+            const playerFaction = this.getPlayerFaction(player);
+            if (playerFaction.id === faction.id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

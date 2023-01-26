@@ -13,6 +13,7 @@ class CommandHandler {
 
         this.command; // command that was typed by sender.
         this.sender;
+        this.target;
         this.full_command;
 
         this.execute();
