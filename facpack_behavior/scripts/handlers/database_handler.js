@@ -161,6 +161,30 @@ class DatabaseHandler {
         const link_instance = new LinkPlayers(player1, player2, this.origin);
         return link_instance;
     }
+
+    /**
+     * Database schema that save a coordinate and set owner.
+     * returns data.
+     */
+    Coordinates(owner, mcBlockLocation) {
+        class Coordinates {
+            constructor(owner, mcBlockLocation, origin) {
+                this.assets = {
+                    header: {
+                        type: this.constructor.name,
+                        origin: origin
+                    },
+                    data: {
+                        owner: owner,
+                        coordinates: `${mcBlockLocation.x};${mcBlockLocation.y};${mcBlockLocation.z}`
+                    }
+                };
+            }
+        }
+        
+        const coordinates_instance = new Coordinates(owner, mcBlockLocation, this.origin);
+        return coordinates_instance;
+    }
 }
 
 export { DatabaseHandler };
