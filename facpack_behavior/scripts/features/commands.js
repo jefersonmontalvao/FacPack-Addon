@@ -6,7 +6,7 @@ import { parseArrayToString, playSoundToPlayer, sendAdviceToEntity, trimAllWS } 
 import { FactionHandler } from "../handlers/factions_handler";
 import { text } from "../conf/lang.conf";
 import { tag_templates } from '../conf/advices.texts'
-import { FactionHandlerException } from "../system/exceptions";
+import { FactionHandlerException, OtherExceptions } from "../system/exceptions";
 import { DatabaseHandler } from "../handlers/database_handler";
 import { getPlayerByName, tryToAutocompletePlayerName } from "../modules/player_utils";
 import { setMcTimeout } from "../modules/mc_system.utils";
@@ -463,6 +463,107 @@ class FactionManager extends CommandHandler {
     }
 }
 
-const COMMAND_LIST = [SpawnTeleport, FactionManager]
+/**
+ * Send a teleport request to some player.
+ */
+class TeleportAction extends CommandHandler {
+    constructor(prefix = '!') {
+        super(prefix, 'tpa');
+    }
+
+    commandCallback() {
+        // Init few variables.
+        const db = new DatabaseHandler(this.constructor.name);
+        this.target = this.getTeleportTarget();
+
+        // Check if target is online.
+        if (this.target !== undefined) {
+            // Check if target is not on a request of tpa.
+            const query = {
+                header: {
+                    type: 'LinkPlayers',
+                    origin: this.constructor.name
+                },
+                data: {
+                    secondary: this.target.name
+                }
+            }
+            if (db.getData(query).length === 0) {
+                // Create the request.
+                const linkPlayers_instance = db.LinkPlayers(this.sender, this.target);
+                db.insertData(linkPlayers_instance);
+    
+                // Advice sender about created request.
+
+
+                // Auto refuse after 20 seconds
+                setMcTimeout(()=> {
+                    // TODO: timeout callback
+                }, 20);
+                
+            } else {
+                // Advice about player is busy to request.
+            }
+        } else {
+            // Advice about offline player.
+        }
+    }
+
+    /**
+     * Returns the command player target.
+     */
+    getTeleportTarget() {
+        const typed_target = parseArrayToString(this.full_command.split(' ').slice(1));
+
+        try {
+            const target = getPlayerByName(tryToAutocompletePlayerName(typed_target));
+            return target;
+        } catch {
+            return undefined;
+        }
+    }
+}
+
+/**
+ * Send a teleport request to bring some player to requester location.
+ */
+class TeleportHereAction extends CommandHandler {
+    constructor(prefix = '!') {
+        super(prefix, 'tpahere');
+    }
+
+    commandCallback() {
+
+    }
+}
+
+/**
+ * Accepts a teleport request.
+ */
+class TeleportActionAccept extends CommandHandler {
+    constructor(prefix = '!') {
+        super(prefix, 'tpaccept');
+        
+    }
+
+    commandCallback() {
+
+    }
+}
+
+/**
+ * Send a text about using of commands in command list variable.
+ */
+class CommandsHelper extends CommandHandler {
+    constructor(prefix = '!') {
+        super(prefix, 'help');
+    }
+
+    commandCallback() {
+
+    }
+}
+
+const COMMAND_LIST = [SpawnTeleport, FactionManager, TeleportAction, TeleportHereAction, TeleportActionAccept, CommandsHelper]
 
 export { COMMAND_LIST }
