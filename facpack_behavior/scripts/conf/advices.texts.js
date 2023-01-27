@@ -10,6 +10,10 @@ export const tag_templates = {
         fac_name: '%fac_name%',
         sender: '%sender%',
         target: '%target%'
+    },
+    tpa: {
+        sender: '%sender%',
+        target: '%target%'
     }
 }
 
