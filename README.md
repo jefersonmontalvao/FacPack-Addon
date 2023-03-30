@@ -1,2 +1,2 @@
 # FacPack Addon
- Make our worlds as a factions server.
+ Make our worlds as a factions server!
