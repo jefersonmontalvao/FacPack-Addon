@@ -12,17 +12,10 @@ let worlds_master = undefined;
 const banned_from_broadcast_str = [];
 
 // Set world's master value.
-function setWorldsMasterValue() {
-    if (worlds_master === undefined) {
-        worlds_master = world.getAllPlayers()[0];
-    } else {
-        // Remove the event.
-        world.events.tick.unsubscribe(setWorldsMasterValue);
-        sendAdviceToEntity(worlds_master, text.system.worldMasterInfo, 'info');
-    }
+if (worlds_master === undefined) {
+    worlds_master = world.getAllPlayers()[0];
+    sendAdviceToEntity(worlds_master, text.system.worldMasterInfo, 'info');
 }
-world.events.tick.subscribe(setWorldsMasterValue);
-
 
 /* CommandLine event listener */
 for (let cmd of COMMAND_LIST) {

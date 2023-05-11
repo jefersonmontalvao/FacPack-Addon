@@ -2,7 +2,7 @@
  * This file was made to contain numeric configuration data.
  */
 
-import { BlockLocation } from '@minecraft/server';
+import { BlockLocation } from '../modules/mc_world.utils.js'
 
 
 /**

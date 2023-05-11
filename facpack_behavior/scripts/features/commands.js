@@ -1,7 +1,7 @@
 // Internal imports
 import { Spawn } from "../conf/enumerations.conf"
 import { CommandHandler } from "../handlers/command_handler";
-import { getOverworld, runMCCommandAtOverworld } from "../modules/mc_world.utils";
+import { getOverworld, runMCCommandAtOverworld, BlockLocation } from "../modules/mc_world.utils";
 import { parseArrayToString, playSoundToPlayer, sendAdviceToEntity, trimAllWS } from "../modules/system.utils"
 import { FactionHandler } from "../handlers/factions_handler";
 import { text } from "../conf/lang.conf";
@@ -12,7 +12,7 @@ import { getPlayerByName, tryToAutocompletePlayerName } from "../modules/player_
 import { setMcTimeout } from "../modules/mc_system.utils";
 
 // External Imports
-import { BlockLocation, world } from '@minecraft/server';
+import { world } from '@minecraft/server';
 
 /**
  * Teleports the command sender to spawn.
