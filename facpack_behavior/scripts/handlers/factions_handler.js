@@ -105,9 +105,13 @@ class FactionHandler {
         let player_score = undefined;
 
         for (let score of scores_data) {
-            if (score.participant.getEntity() === player) {
-                player_score = score.score;
-                break;
+            try {
+                if (score.participant.getEntity() === player) {
+                    player_score = score.score;
+                    break;
+                }
+            } catch {
+                continue;
             }
         }
         if (player_score === undefined) {
