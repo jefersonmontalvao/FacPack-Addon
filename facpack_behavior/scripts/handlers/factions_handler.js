@@ -14,8 +14,12 @@ class FactionHandler {
         // Check if player is participating of some faction from factions list.
         for (let faction of factions_list) {
             for (let participant of faction.getParticipants()) {
-                if (participant.getEntity() === player) {
-                    return true;
+                try {
+                    if (participant.getEntity() === player) {
+                        return true;
+                    }
+                } catch {
+                    console.log('Offline Player.')
                 }
             }
         }
@@ -29,8 +33,12 @@ class FactionHandler {
         for (let faction of factions_list) {
             let faction_scores = faction.getScores();
             for (let faction_score of faction_scores) {
-                if (faction_score.participant.getEntity() === player) {
-                    return faction;
+                try {
+                    if (faction_score.participant.getEntity() === player) {
+                        return faction;
+                    }
+                } catch {
+                    console.log('Offline Player')
                 }
             }
         }
@@ -97,9 +105,13 @@ class FactionHandler {
         let player_score = undefined;
 
         for (let score of scores_data) {
-            if (score.participant.getEntity() === player) {
-                player_score = score.score;
-                break;
+            try {
+                if (score.participant.getEntity() === player) {
+                    player_score = score.score;
+                    break;
+                }
+            } catch {
+                continue;
             }
         }
         if (player_score === undefined) {

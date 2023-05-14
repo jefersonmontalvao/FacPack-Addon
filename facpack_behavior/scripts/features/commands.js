@@ -1,7 +1,7 @@
 // Internal imports
 import { Spawn } from "../conf/enumerations.conf"
 import { CommandHandler } from "../handlers/command_handler";
-import { getOverworld, runMCCommandAtOverworld } from "../modules/mc_world.utils";
+import { getOverworld, runMCCommandAtOverworld, BlockLocation } from "../modules/mc_world.utils";
 import { parseArrayToString, playSoundToPlayer, sendAdviceToEntity, trimAllWS } from "../modules/system.utils"
 import { FactionHandler } from "../handlers/factions_handler";
 import { text } from "../conf/lang.conf";
@@ -12,7 +12,7 @@ import { getPlayerByName, tryToAutocompletePlayerName } from "../modules/player_
 import { setMcTimeout } from "../modules/mc_system.utils";
 
 // External Imports
-import { BlockLocation, world } from '@minecraft/server';
+import { world } from '@minecraft/server';
 
 /**
  * Teleports the command sender to spawn.
@@ -168,7 +168,7 @@ class FactionManager extends CommandHandler {
 
                                     // Do advices to players.
                                     // Requester
-                                    this.sendFactionAdvice(this.sender, thistext.fac.invite_success);
+                                    this.sendFactionAdvice(this.sender, text.fac.invite_success);
                                     playSoundToPlayer(this.sender, 'success');
 
                                     // Receiver
@@ -400,7 +400,7 @@ class FactionManager extends CommandHandler {
 
                         let base_location = new BlockLocation(coordiante[0], coordiante[1], coordiante[2]);
 
-                        runMCCommandAtOverworld(`tp ${this.sender.name} ${base_location.x} ${base_location.y} ${base_location.z}`)
+                        runMCCommandAtOverworld(`tp "${this.sender.name}" ${base_location.x} ${base_location.y} ${base_location.z}`)
 
                         this.sendFactionAdvice(this.sender, text.fac.base_success);
                         playSoundToPlayer(this.sender, 'success');
@@ -428,13 +428,19 @@ class FactionManager extends CommandHandler {
      */
     sendFactionAdvice(target__, text) {
         const sender = this.sender.name;
-        const target = this.target !== undefined ? this.target.name : 'undefined';
+        let target = undefined;
+        if (this.target !== undefined) {
+            target = this.target !== undefined ? this.target.name : 'undefined';
+        }
         const faction = this.faction !== undefined ? this.faction.id : 'undefined';
 
         let FormatedText = text
             .replaceAll(tag_templates.fac.sender, sender)
-            .replaceAll(tag_templates.fac.target, target)
             .replaceAll(tag_templates.fac.fac_name, faction);
+
+        if (this.target !== undefined) {
+            FormatedText = FormatedText.replaceAll(tag_templates.fac.target, target)
+        }
 
         FormatedText = `[§8${this.constructor.name}§r] ${FormatedText}`;
 

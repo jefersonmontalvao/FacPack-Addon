@@ -3,7 +3,7 @@ import { eventBeforeChat } from "../modules/mc_system.utils";
 import { runMCCommandByEntity, getPlayerHierarchy } from "../modules/player_utils";
 
 class ChatFormatter {
-    constructor(command_list) {
+    constructor(listened_commands) {
         // Init few variables
         this.sender;
         this.message;
@@ -22,7 +22,7 @@ class ChatFormatter {
             this.sender = chat.sender;
             this.message = chat.message;
 
-            if (!this.chatEventIsCommandOfList(command_list)) {
+            if (!this.chatEventIsCommandOfList(listened_commands)) {
                 /**
                  * Cancel the message broadcast and send a formated message by tellraw mc command.
                  */

@@ -17,9 +17,9 @@ function eventBeforeChat(callback) {
 function setMcTimeout(void_, timeout) {
     timeout = timeout * 20;
 
-    const timer = system.runSchedule(function () {
+    const timer = system.runTimeout(function () {
         void_();
-        system.clearRunSchedule(timer);
+        system.clearRun(timer);
     }, timeout);
 }
 

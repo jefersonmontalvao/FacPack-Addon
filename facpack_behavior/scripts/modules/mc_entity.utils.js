@@ -1,4 +1,4 @@
-import { world, MinecraftDimensionTypes, BlockLocation } from "@minecraft/server";
+import { world, MinecraftDimensionTypes } from "@minecraft/server";
 
 /** 
  * Get entity by tag name.
