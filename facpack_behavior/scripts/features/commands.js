@@ -20,7 +20,7 @@ import { world } from '@minecraft/server';
  */
 class SpawnTeleport extends CommandHandler {
     constructor(prefix = '!') {
-        super(prefix, 'spawn');
+        super(prefix, 'lobby');
     }
 
     commandCallback() {
