@@ -2,7 +2,7 @@ import { eventBeforeChat } from '../modules/mc_system.utils';
 import { runMCCommandByEntity } from '../modules/player_utils';
 import { playSoundToPlayer } from '../modules/system.utils';
 import { tag_templates } from '../conf/advices.texts';
-import { text, text } from '../conf/lang.conf';
+import { text } from '../conf/lang.conf';
 
 /**
  * Thats the class that controls everything about 
