@@ -20,8 +20,8 @@ function getEntitiesByTagName(tag) {
 /**
  * Test if entity has a specified tag.
  */
-function entityHasTag(entity) {
-    return entity.hasTag();
+function entityHasTag(entity, tag) {
+    return entity.hasTag(tag);
 }
 
 /**
