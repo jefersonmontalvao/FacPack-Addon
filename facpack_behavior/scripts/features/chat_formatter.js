@@ -35,7 +35,7 @@ class ChatFormatter {
     /** Tests whether the sent message is a command */
     chatEventIsCommandOfList(command_list) {
         for (let cmd of command_list) {
-            if (cmd === this.message.split(' ')[0]) {
+            if (cmd === this.message.split(' ')[0] || cmd[0] === this.message[0]) {
                 return true;
             }
         }
