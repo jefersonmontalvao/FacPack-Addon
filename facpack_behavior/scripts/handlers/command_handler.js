@@ -3,6 +3,8 @@ import { runMCCommandByEntity } from '../modules/player_utils';
 import { playSoundToPlayer } from '../modules/system.utils';
 import { tag_templates } from '../conf/advices.texts';
 import { text } from '../conf/lang.conf';
+import { COMMAND_LIST } from '../features/commands';
+import { entityHasTag } from '../modules/mc_entity.utils';
 
 /**
  * Thats the class that controls everything about 
@@ -38,6 +40,8 @@ class CommandHandler {
         eventBeforeChat(chat => {
             // Check if prefix was typed.
             if (chat.message.startsWith(this.prefix)) {
+                chat.cancel = true; // do not broadcast the command in the chat.
+
                 // Define the initial values of some variables.
                 this.playerCommandRequest = chat.message
                     .slice(this.prefix.length)
@@ -45,27 +49,39 @@ class CommandHandler {
 
                 this.sender = chat.sender;
                 this.full_command = chat.message;
+                const ExecutedSignal = '__CommandExecutedSignal__';
                 
+
                 if (typeof this.command_id === 'string') {
                     if (this.playerCommandRequest === this.command_id) {
-                        chat.cancel = true; // do not broadcast
-                        this.commandCallback();
+                        this.sender.addTag(ExecutedSignal); // Add a executed signal tag to player. This tag is temp.
+                        this.commandCallback(); // Run the command function.
                     } else {
-                        sendNonExistentCommandAdvice();
+                        if (this.constructor.name === COMMAND_LIST[COMMAND_LIST.length - 1].name) {
+                            if (!entityHasTag(this.sender, ExecutedSignal)) {
+                                sendNonExistentCommandAdvice(this.sender, this.playerCommandRequest);
+                            } else {
+                                this.sender.removeTag(ExecutedSignal);// Remove the temp executed signal tag.
+                            }
+                        }
                     }
                 } else if (Array.isArray(this.command_id)) {
                     // Dectect if the callback was called.
                     let runned = false;
-                    for (id of this.command_id) {
+                    for (let id of this.command_id) {
                         if (this.playerCommandRequest === id) {
-                            chat.cancel = true; // do not broadcast
-                            this.commandCallback();
+                            this.sender.addTag(ExecutedSignal); // Add a executed signal tag to player. This tag is temp.
+                            this.commandCallback(); // Run the command function.
                             runned = true;
                             break;
                         }
                     }
-                    if (!runned) {
-                        sendNonExistentCommandAdvice();
+                    if (!runned && this.constructor.name === COMMAND_LIST[COMMAND_LIST.length - 1].name) {
+                        if (!entityHasTag(this.sender, ExecutedSignal)) {
+                            sendNonExistentCommandAdvice(this.sender, this.playerCommandRequest);
+                        } else {
+                            this.sender.removeTag(ExecutedSignal);// Remove the temp executed signal tag.
+                        }
                     }
                 }
             }
@@ -74,12 +90,11 @@ class CommandHandler {
         /**
          * Send an advice about that command do not exists.
          */
-        let sender = this.sender;
-        function sendNonExistentCommandAdvice() {
+        function sendNonExistentCommandAdvice(sender, requested_command) {
             let text_template = text.system.non_existent_command
-                .replaceAll(tag_templates.system.player_command_request, sender);
+                .replaceAll(tag_templates.system.player_command_request, requested_command);
 
-            runMCCommandByEntity(text_template, sender);
+            runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "§c${text_template}§r"}]}`, sender);
             playSoundToPlayer(sender, 'error');
         }
     }

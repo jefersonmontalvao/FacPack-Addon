@@ -23,7 +23,10 @@ export const tag_templates = {
 // Languages
 export const pt_br = {
     system: {
-        non_existent_command: `O comando ${tag_templates.system.player_command_request} não existe.`
+        non_existent_command: `O comando \\"${tag_templates.system.player_command_request}\\" está incorreto ou não existe.`
+    },
+    lobby: {
+        teleported: 'Você foi teleportado para o lobby.'
     },
     fac: {
         create_success: 'Criado com sucesso!',
