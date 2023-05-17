@@ -101,7 +101,30 @@ export const pt_br = {
           !fac kick <jogador>  - Expulsa alguém de uma facção.
           !fac setbase - Define a localização atual como base da facção.
           !fac base - Teleporta você para a localização da base.`
-    }
+    },
+    tpa: {
+        tpa_success: {
+            request_sent: `Você enviou um pedido de teleporte para §8${tag_templates.tpa.target}§r.`,
+            request_received: `O jogador(a) §8${tag_templates.tpa.sender}§r quer se teleportar para sua localização! Digite §8!tpaccept§r para permitir.`,
+            request_accepted: `O jogador(a) §8${tag_templates.tpa.target}§r aceitou sua solicitação.`,
+            request_refused: `O jogador(a) §8${tag_templates.tpa.target}§r recusou sua solicitação.`,
+            request_autorefuse_info: `A solicitação é cancelada em 30 segundos caso não haja resposta.`,
+            request_autorefuse: `Tempo esgotado, a solicitação foi recusada automaticamente.`,
+            teleported_to_sender: `O jogador(a) §8${tag_templates.tpa.target}§r foi teleportado para você!`,
+            target_teleported: `Você foi teleportado para §8${tag_templates.tpa.sender}§r com sucesso!`
+        },
+        tpa_fail: {
+            target_offline: 'O jogador está offline ou não existe.',
+            target_busy: 'O jogador está sob uma solicitação e não pode responder esta.',
+            can_not_teleport_to_yourself: 'Você não pode se teleportar para você mesmo, isso não faz sentido.'
+        }
+
+    },
+    help: `FacPack Commands Help:
+    !lobby - Teleporta você para o spawn.
+    !fac - Comando para generenciar facções/clãs.
+    !tpa <Jogador> - Manda um pedido para se teleportar para alguém.
+    !tpaccept - Aceita um pedido de teleporte.`
 }
 
 export const en_us = {

@@ -8,7 +8,7 @@ import { text } from "../conf/lang.conf";
 import { tag_templates } from '../conf/advices.texts'
 import { FactionHandlerException, OtherExceptions } from "../system/exceptions";
 import { DatabaseHandler } from "../handlers/database_handler";
-import { getPlayerByName, tryToAutocompletePlayerName } from "../modules/player_utils";
+import { getPlayerByName, runMCCommandByEntity, tryToAutocompletePlayerName } from "../modules/player_utils";
 import { setMcTimeout } from "../modules/mc_system.utils";
 
 // External Imports
@@ -26,6 +26,8 @@ class SpawnTeleport extends CommandHandler {
     commandCallback() {
         // This command is running at overworld.
         runMCCommandAtOverworld(`tp ${this.sender.name} ${Spawn.x} ${Spawn.y} ${Spawn.z}`);
+        runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "§e${text.lobby.teleported}§r"}]}`, this.sender);
+        playSoundToPlayer(this.sender, 'success')
     }
 }
 
@@ -402,8 +404,8 @@ class FactionManager extends CommandHandler {
 
                         runMCCommandAtOverworld(`tp "${this.sender.name}" ${base_location.x} ${base_location.y} ${base_location.z}`)
 
-                        this.sendFactionAdvice(this.sender, text.fac.base_success);
                         playSoundToPlayer(this.sender, 'success');
+                        this.sendFactionAdvice(this.sender, text.fac.base_success);
                     } else {
                         // No base defined advice.
                         this.sendFactionAdvice(this.sender, text.fac.base_fail.not_defined)
@@ -474,51 +476,128 @@ class FactionManager extends CommandHandler {
  */
 class TeleportAction extends CommandHandler {
     constructor(prefix = '!') {
-        super(prefix, 'tpa');
+        super(prefix, ['tpa', 'tpahere', 'tpaccept', 'tpdeny',]);
     }
 
     commandCallback() {
         // Init few variables.
         const db = new DatabaseHandler(this.constructor.name);
-        this.target = this.getTeleportTarget();
 
-        // Check if target is online.
-        if (this.target !== undefined) {
-            // Check if target is not on a request of tpa.
-            const query = {
-                header: {
-                    type: 'LinkPlayers',
-                    origin: this.constructor.name
-                },
-                data: {
-                    secondary: this.target.name
+        // Test what the command of choice.
+        switch (this.playerCommandRequest) {
+            case 'tpa':
+                // Init few variables.
+                this.target = this.getTargetObject();
+
+                // Check if target is not the sender.
+                if (this.target === this.sender) {
+                    tpaAdvice(text.tpa.tpa_fail.can_not_teleport_to_yourself, this.sender);
+                    playSoundToPlayer(this.sender, 'error'); 
+                    break;
+                }
+
+                // Check if target is online.
+                if (this.target !== undefined) {
+                    // Query to check in db if target is not on a request of tpa.
+                    const query = {
+                        header: {
+                            type: 'LinkPlayers',
+                            origin: this.constructor.name
+                        },
+                        data: {
+                            secondary: this.target.name
+                        }
+                    }
+
+                    if (db.getData(query).length === 0) {
+                        // Create the request data and insert it on database.
+                        const linkPlayers_instance = db.LinkPlayers(this.sender.name, this.target.name);
+                        db.insertData(linkPlayers_instance);
+
+                        // Advice sender about created request.
+                        tpaAdvice(text.tpa.tpa_success.request_sent, this.sender, {target: this.target.name});
+                        playSoundToPlayer(this.sender, 'success');
+
+                        // Advice target about created request.
+                        tpaAdvice(text.tpa.tpa_success.request_received, this.target, {sender: this.sender.name});
+                        tpaAdvice(text.tpa.tpa_success.request_autorefuse_info, this.target, {sender: this.sender.name});
+                        playSoundToPlayer(this.sender, 'info');
+
+
+                        // Auto refuse after 20 seconds
+                        setMcTimeout(() => {
+                            if (db.getData(query).length !== 0) {
+                                db.removeDataByInstance(linkPlayers_instance);
+                                tpaAdvice(text.tpa.tpa_success.request_autorefuse, this.sender);
+                                tpaAdvice(text.tpa.tpa_success.request_autorefuse, this.target);
+                            }
+                        }, 30);
+                    } else {
+                        // Advice that player is already in a request.
+                        tpaAdvice(text.tpa.tpa_fail.target_busy, this.sender);
+                        playSoundToPlayer(this.sender, 'error');
+                    }
+                } else {
+                    // Requested player is offline advice.
+                    tpaAdvice(text.tpa.tpa_fail.target_offline, this.sender);
+                    playSoundToPlayer(this.sender, 'error');
+                }
+                break;
+            case 'tpahere':
+                break;
+            case 'tpaccept':
+                // Init few variables.
+                const query = {
+                    header: {
+                        type: 'LinkPlayers',
+                        origin: this.constructor.name
+                    },
+                    data: {
+                        secondary: this.sender.name
+                    }
+                }
+
+                // Check for requests to the sender player.
+                const requestData = db.getData(query);
+
+                if (requestData.length !== 0) {
+                    // Remove data from database.
+                    db.removeDataByQuery(requestData[0]);
+                    
+                    // get primary and secondary player value.
+                    let sender = getPlayerByName(requestData[0].data.primary);
+                    let target = getPlayerByName(requestData[0].data.secondary);
+
+                    // Do teleport
+                    runMCCommandByEntity(`tp "${target.name}"`, sender);
+                    tpaAdvice(text.tpa.tpa_success.teleported_to_sender, target, {target: sender.name});
+                    tpaAdvice(text.tpa.tpa_success.target_teleported, sender, {sender: target.name});
+                    playSoundToPlayer(sender, 'success');
+                    playSoundToPlayer(target, 'success');
+                }
+                break;
+            case 'tpdeny':
+                break;
+        }
+
+        function tpaAdvice(broadcast_text, target, args={}) {
+            if (args !== undefined) {
+                if (args.sender !== undefined) {
+                    broadcast_text = broadcast_text.replaceAll(tag_templates.tpa.sender, args.sender);
+                } 
+                if (args.target !== undefined) {
+                    broadcast_text = broadcast_text.replaceAll(tag_templates.tpa.target, args.target);
                 }
             }
-            if (db.getData(query).length === 0) {
-                // Create the request.
-                const linkPlayers_instance = db.LinkPlayers(this.sender, this.target);
-                db.insertData(linkPlayers_instance);
-    
-                // Advice sender about created request.
 
-
-                // Auto refuse after 20 seconds
-                setMcTimeout(()=> {
-                    // TODO: timeout callback
-                }, 20);
-                
-            } else {
-                // Advice about player is busy to request.
-            }
-        } else {
-            // Advice about offline player.
+            runMCCommandByEntity(`tellraw @s {"rawtext": [{"text": "[§9TeleportAction§f] ${broadcast_text}"}]}`, target);
         }
     }
 
     /**
-     * Returns the command player target.
+     * Returns the player target.
      */
-    getTeleportTarget() {
+    getTargetObject() {
         const typed_target = parseArrayToString(this.full_command.split(' ').slice(1));
 
         try {
@@ -531,33 +610,6 @@ class TeleportAction extends CommandHandler {
 }
 
 /**
- * Send a teleport request to bring some player to requester location.
- */
-class TeleportHereAction extends CommandHandler {
-    constructor(prefix = '!') {
-        super(prefix, 'tpahere');
-    }
-
-    commandCallback() {
-
-    }
-}
-
-/**
- * Accepts a teleport request.
- */
-class TeleportActionAccept extends CommandHandler {
-    constructor(prefix = '!') {
-        super(prefix, 'tpaccept');
-        
-    }
-
-    commandCallback() {
-
-    }
-}
-
-/**
  * Send a text about using of commands in command list variable.
  */
 class CommandsHelper extends CommandHandler {
@@ -566,10 +618,11 @@ class CommandsHelper extends CommandHandler {
     }
 
     commandCallback() {
-
+        sendAdviceToEntity(this.sender, text.help);
+        playSoundToPlayer(this.sender, 'success');
     }
 }
 
-const COMMAND_LIST = [SpawnTeleport, FactionManager, TeleportAction, TeleportHereAction, TeleportActionAccept, CommandsHelper]
+const COMMAND_LIST = [SpawnTeleport, FactionManager, TeleportAction, CommandsHelper]
 
 export { COMMAND_LIST }
